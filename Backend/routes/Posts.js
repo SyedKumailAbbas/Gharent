@@ -17,54 +17,112 @@ cloudinary.config({
 // adding post on database
 router.post("/", upload.single('image'), async (req, res) => {
   try {
-    // Upload image to Cloudinary
+    // Verify JWT token
+    const token = req.headers['token'];
     const decodedToken = jwt.verify(token, "hellojani");
-    console.log(decodedToken);
-    const result = await cloudinary.uploader.upload(req.file.buffer, {
+    // console.log(decodedToken)
+    // console.log(token);
+    console.log(req.headers)
+    // Upload image to Cloudinary
+    const base64String = req.file.buffer.toString('base64');
+
+    // Upload image to Cloudinary
+    const result = await cloudinary.uploader.upload(`data:image/png;base64,${base64String}`, {
       folder: 'Images',
     });
-    const { Title, Description, Price, beds, baths, country, state, city, address, zipcode, area, status } = req.body;
     const imageUrl = result.secure_url;
-    const post = Post.create({
-      Title: Title,
-      Price: Price,
-      Status:status
-    })
-    const location = Location.create({
-      address: address,
-      city:city,
-      country:country,
-      state:state,
-      zipcode:zipcode
-    })
-    const description=description.create({
-      bath:baths,
-      bed:beds,
-      area:area
-    })
-    console.log("hello post api");
-  }
-  catch (err) {
+    const publicid=result.public_id
 
+    // Create records in the database with associations
+    const post = await Post.create({
+      Title: req.body.Title,
+      Price: req.body.Price,
+      Status: req.body.status,
+    });
 
+    const location = await Location.create({
+      address: req.body.address,
+      city: req.body.city,
+      country: req.body.country,
+      state: req.body.state,
+      zipcode: req.body.zipcode,
+      pid: post.pid,
+
+    });
+
+    const description = await Description.create({
+      desctxt:req.body.Description,
+      bath: req.body.baths,
+      bed: req.body.beds,
+      area: req.body.area,
+      pid: post.pid,
+
+    });
+
+    const image = await Image.create({
+      imageurl: imageUrl,
+      // Assuming you have an association between Image and Post
+      pid: post.pid,
+    });
+
+    console.log("Record created successfully");
+    res.status(200).json({ success: true, public_id: publicid });
+    } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, error: 'Internal Server Error' });
   }
 });
 
 
+
 //getting all post
 router.get("/", async (req, res) => {
-  const allpost = await Post.findAll({});
-  res.json(allpost)
+  try {
+    // Fetch all posts with associated location, description, and image
+    const allPosts = await Post.findAll({   //left outer join
+      include: [
+        { model: Location, as: 'Location' },
+        { model: Description, as: 'Description' },
+        { model: Image, as: 'Image' },
+      ],
+    });
+    
+    if (!allPosts) res.json("There are no post")
+
+    // Send the data as a response
+    res.status(200).json({ success: true, posts: allPosts });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, error: 'Internal Server Error' });
+  }
+
 
 });
 
 
 //getting post by id
 router.get(`/byid/:id`, async (req, res) => {
-  const [userid, title, price, status, imageid, descid, locationid] = req.body
   const pid = req.params.id
   const post = await Post.findByPk(pid)
-  res.json(post)
+ 
+  const location= await Location.findOne({
+    where:{
+      pid:pid
+    },
+  })
+  const image= await Image.findOne({
+    where:{
+      pid:pid
+    },
+  })
+  
+  const description= await Description.findOne({
+    where:{
+      pid:pid
+    },
+  })
+  const fullpost = { ...post.dataValues, ...location?.dataValues, ...image?.dataValues, ...description?.dataValues };
+  res.json(fullpost)
 })
 
 

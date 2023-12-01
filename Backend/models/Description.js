@@ -8,6 +8,11 @@ module.exports = (sequelize,DataTypes) => {
         notEmpty:true
       }
     },
+    desctxt:{
+      type: DataTypes.STRING,
+      allowNull: false,
+
+    },
     bath: {
       type: DataTypes.INTEGER,
       allowNull: false,

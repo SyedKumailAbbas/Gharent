@@ -6,7 +6,6 @@ const postRouter = require('./routes/Posts');
 const commentRouter = require('./routes/Comments');
 const authRouter = require(`./routes/Auth`);
 const app = express();
-const cloudinary = require('cloudinary').v2
 app.use(express.json());
 app.use(cors());
 

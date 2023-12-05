@@ -11,17 +11,22 @@ function Fullpost() {
   const { authState } = useContext(AuthContext);
 
   useEffect(() => {
-    axios.get(`http://localhost:3001/posts/byid/${id}`).then((response) => {
-      setPostObject(response.data);
-      console.log(response); // Log the response
-    });
+    axios.get(`http://localhost:3001/posts/byid/${id}`)
+      .then((response) => {
+        setPostObject(response.data);
+      })
+      .catch((error) => {
+        console.error("Failed to fetch post:", error);
+      });
 
-    axios.get(`http://localhost:3001/comments/${id}`).then((response) => {
-      setComments(response.data);
-      console.log(response); // Log the response
-
-    });
-  }, []);
+    axios.get(`http://localhost:3001/comments/${id}`)
+      .then((response) => {
+        setComments(response.data);
+      })
+      .catch((error) => {
+        console.error("Failed to fetch comments:", error);
+      });
+  }, [id]); // Added id to the dependency array
 
   const addComment = () => {
     axios
@@ -29,39 +34,38 @@ function Fullpost() {
         "http://localhost:3001/comments",
         {
           commentBody: newComment,
-          postid: id,
+          PostId: id,
         },
         {
           headers: {
-            token: localStorage.getItem("Token"),
+            Authorization: `Bearer ${localStorage.getItem("Token")}`,
           },
         }
       )
       .then((response) => {
         if (response.data.error) {
-          console.log(response.data.error);
+          alert("Error: " + response.data.error);
         } else {
-          const commentToAdd = {
-            commentBody: newComment,
-            username: response.data.username,
-          };
+          const commentToAdd = { ...response.data, commentBody: newComment };
           setComments([...comments, commentToAdd]);
           setNewComment("");
         }
+      })
+      .catch((error) => {
+        console.error("Failed to add comment:", error);
       });
   };
 
-  const deleteComment = (id) => {
+  const deleteComment = (commentId) => {
     axios
-      .delete(`http://localhost:3001/comments/${id}`, {
-        headers: { token: localStorage.getItem("Token") },
+      .delete(`http://localhost:3001/comments/${commentId}`, {
+        headers: { Authorization: `Bearer ${localStorage.getItem("Token")}` },
       })
       .then(() => {
-        setComments(
-          comments.filter((val) => {
-            return val.id != id;
-          })
-        );
+        setComments(comments.filter((val) => val.id !== commentId));
+      })
+      .catch((error) => {
+        console.error("Failed to delete comment:", error);
       });
   };
 
@@ -69,9 +73,12 @@ function Fullpost() {
     <div className="postPage">
       <div className="leftSide">
         <div className="post" id="individual">
-          <div className="title"> {postObject.Title} </div>
+          <div className="title">{postObject.Title}</div>
           <div className="body">{postObject.Price}</div>
-          <img src={postObject.Image.imageurl}/>
+         {/* Access the image URL using the correct property name */}
+      {postObject.Image && postObject.Image.imageurl && (
+        <img src={postObject.Image.imageurl} alt="Post" />
+      )}
         </div>
       </div>
       <div className="rightSide">
@@ -81,11 +88,9 @@ function Fullpost() {
             placeholder="Comment..."
             autoComplete="off"
             value={newComment}
-            onChange={(event) => {
-              setNewComment(event.target.value);
-            }}
+            onChange={(event) => setNewComment(event.target.value)}
           />
-          <button onClick={addComment}> Add Comment</button>
+          <button onClick={addComment}>Add Comment</button>
         </div>
         <div className="listOfComments">
           {comments.map((comment, key) => {
@@ -95,9 +100,8 @@ function Fullpost() {
                 <label> Username: {comment.username}</label>
                 {authState.username === comment.username && (
                   <button
-                    onClick={() => {
-                      deleteComment(comment.id);
-                    }}
+                    onClick={() => deleteComment(comment.id)}
+                    aria-label={`Delete comment by ${comment.username}`}
                   >
                     X
                   </button>

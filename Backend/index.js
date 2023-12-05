@@ -19,7 +19,7 @@ const PORT = process.env.PORT || 3001;
 
 
 // Move the server listen and routes setup inside the Sequelize sync callback
-db.sequelize.sync()
+db.sequelize.sync({ alter: true })
   .then(() => {
     app.listen(PORT, () => {
       console.log(`Your app is live on port: ${PORT}`);

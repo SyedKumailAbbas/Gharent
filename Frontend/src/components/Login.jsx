@@ -1,9 +1,12 @@
-import React, {useState} from 'react'
+import React, {useState,useContext} from 'react'
 import {  Link,useNavigate} from 'react-router-dom';
 import axios from 'axios';
+import { AuthContext } from "../Helpers/AuthContext";
 const Login = () => {
   const [username,setusername]=useState("")
   const [password,setpassword]=useState("")
+  const { setAuthState } = useContext(AuthContext);
+
   const navigate=useNavigate()
   const formSubmit = async () => {
     const data = {username:username,password:password}
@@ -11,9 +14,15 @@ const Login = () => {
 
         console.log("Login successfully");
         if (response.data.error) alert(response.data.error)
-        else sessionStorage.setItem("token",response.data)
+        else{ 
+        localStorage.setItem("Token",response.data.token)
+        setAuthState({
+          username: response.data.username,
+          id: response.data.id,
+          status: true,
+        });
         navigate('/')
-
+  }
       });
 
   };

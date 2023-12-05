@@ -29,14 +29,13 @@ const Register = () => {
     try {
       await axios.post(`http://localhost:3001/auth/register`, data);
       console.log("Registration successful!");
-      // You can redirect the user or show a success message here
+      
     } catch (error) {
       if (error.response) {
-      //if any error regarding same values occur then it will display on alert box 
+       
         console.error("Error response:", error.response.data);
         alert(error.response.data.error); // Display a pop-up alert with the error message
       } else if (error.request) {
-        // The request was made but no response was received
         console.error("No response received:", error.request);
       } else {
         // Something happened in setting up the request that triggered an Error

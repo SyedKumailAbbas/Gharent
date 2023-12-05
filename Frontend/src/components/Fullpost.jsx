@@ -1,112 +1,114 @@
-import React, { useState } from 'react'
-import { useParams } from 'react-router-dom'
-import { useEffect } from 'react'
-import axios from 'axios';
-import styled from 'styled-components'
-import Comment from './Comment';
-//writing some styled-components css for this component
-const Postmaindiv = styled.div`
-width:500px;
-margin:10px auto;
-background-color:whitesmoke;
-display:center;
-`
-const PostHeader = styled.div`
-background-color: black;
-`
-const PostTitle = styled.div`
-background-color: lightblue;
-color: white;
+import React, { useEffect, useState, useContext } from "react";
+import { useParams } from "react-router-dom";
+import axios from "axios";
+import { AuthContext } from "../Helpers/AuthContext";
 
-`
-
-const PostDescription = styled.div`
-background-color: lightyellow;
-height:4rem;
-color: black;
-white-space:nowrap;
-overflow:hidden;
-text-overflow:ellipsis;
-
-`
-
-const Fullpost = () => {
-  let { id } = useParams()
-  const [postview, setview] = useState({})
-  const [comments,setlistofcomments]=useState([]);
-  const [newcomment,setcomment]=useState("");
+function Fullpost() {
+  let { id } = useParams();
+  const [postObject, setPostObject] = useState({});
+  const [comments, setComments] = useState([]);
+  const [newComment, setNewComment] = useState("");
+  const { authState } = useContext(AuthContext);
 
   useEffect(() => {
-    axios.get(`http://localhost:3001/posts/byid/${id}`).then((res) => {
-      setview(res.data)})
-      axios.get(`http://localhost:3001/comments/${id}`).then((res) => {
-        setlistofcomments(res.data)
+    axios.get(`http://localhost:3001/posts/byid/${id}`).then((response) => {
+      setPostObject(response.data);
+      console.log(response); // Log the response
+    });
+
+    axios.get(`http://localhost:3001/comments/${id}`).then((response) => {
+      setComments(response.data);
+      console.log(response); // Log the response
+
+    });
+  }, []);
+
+  const addComment = () => {
+    axios
+      .post(
+        "http://localhost:3001/comments",
+        {
+          commentBody: newComment,
+          postid: id,
+        },
+        {
+          headers: {
+            token: localStorage.getItem("Token"),
+          },
+        }
+      )
+      .then((response) => {
+        if (response.data.error) {
+          console.log(response.data.error);
+        } else {
+          const commentToAdd = {
+            commentBody: newComment,
+            username: response.data.username,
+          };
+          setComments([...comments, commentToAdd]);
+          setNewComment("");
+        }
+      });
+  };
+
+  const deleteComment = (id) => {
+    axios
+      .delete(`http://localhost:3001/comments/${id}`, {
+        headers: { token: localStorage.getItem("Token") },
       })
+      .then(() => {
+        setComments(
+          comments.filter((val) => {
+            return val.id != id;
+          })
+        );
+      });
+  };
 
-
-    }, [])
-const addcomment=()=>{
-  axios.post(`http://localhost:3001/comments`,{Comment_Body:newcomment,PostPid:id},
-  {
-    headers:{
-      token:sessionStorage.getItem("token")
-    }
-  }
-  ).then((res)=>{
-  const commenttoadd={Comment_Body:newcomment}
-  setlistofcomments([...comments,commenttoadd])
-  setcomment("")
-  })
-  .catch((error)=>{
-
-    alert(error)
-  })
-  
+  return (
+    <div className="postPage">
+      <div className="leftSide">
+        <div className="post" id="individual">
+          <div className="title"> {postObject.Title} </div>
+          <div className="body">{postObject.Price}</div>
+          <img src={postObject.Image.imageurl}/>
+        </div>
+      </div>
+      <div className="rightSide">
+        <div className="addCommentContainer">
+          <input
+            type="text"
+            placeholder="Comment..."
+            autoComplete="off"
+            value={newComment}
+            onChange={(event) => {
+              setNewComment(event.target.value);
+            }}
+          />
+          <button onClick={addComment}> Add Comment</button>
+        </div>
+        <div className="listOfComments">
+          {comments.map((comment, key) => {
+            return (
+              <div key={key} className="comment">
+                {comment.commentBody}
+                <label> Username: {comment.username}</label>
+                {authState.username === comment.username && (
+                  <button
+                    onClick={() => {
+                      deleteComment(comment.id);
+                    }}
+                  >
+                    X
+                  </button>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </div>
+  );
 }
-    return (
-      <>
 
-        <Postmaindiv>
-
-          <div className="rightside">
-            <PostHeader>
-              <PostTitle>{postview.Title}</PostTitle>
-            </PostHeader>
-            <div className="Postbody">
-              <PostDescription>{postview.Description}</PostDescription>
-            </div>
-            <div className="PostFooter">
-              <div className="Postuser">{postview.Price}</div>
-              <div className="Posttime">{postview.CreatedAt}</div>
-            </div>
-          </div>
-
-          {/* <Comment id={id}/> */}
-          <div className='leftside'>
-            <div className='cmntinput'>
-              
-                <input type='text' placeholder='Add comment...' value={newcomment} required onChange={(event)=>{
-                  setcomment(event.target.value)
-                }}/>
-              <button onClick={addcomment}>Submit</button>
-            </div>
-            <div className='listofcomments'>
-              {
-                comments.map((value, key) => {
-                  return (
-                    <div className='commentbody' key={key}>{value.Comment_Body}</div>
-                  )
-                })
-              }
-            </div>
-
-          </div>
-        </Postmaindiv>
-
-
-
-      </>
-    )
-  }
-
-export default Fullpost
+export default Fullpost;

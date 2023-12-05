@@ -2,7 +2,8 @@ const express = require("express");
 const { User } = require("../models");
 const bcrypt = require("bcrypt");
 const router = express.Router();
-const {sign}=require("jsonwebtoken")
+const {sign}=require("jsonwebtoken");
+const { validatetoken } = require("../middleware/middleauth");
 router.get('/', (req, res) => {
     res.json("hello");
 });
@@ -58,13 +59,17 @@ router.post("/login", async (req, res) => {
      if (!match) {
         return res.json({ error: "Incorrect password" });
     }
-    const Token = sign({id:User.uid},"hellojani")
-    res.json(Token);
+    const Token = sign({username:user.username,id:user.uid},"hellojani")
+    res.json({token: Token, username:username,id:user.id});
+    // res.json(Token)
 
 
 });
 })
 
+router.get("/auth",validatetoken,async(req,res)=>{
+    res.json(req.user)
+})
 
 
 module.exports = router;

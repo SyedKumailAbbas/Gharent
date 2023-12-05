@@ -31,6 +31,7 @@ module.exports =(sequelize, DataTypes)=>{
                     notEmpty:true
                 }
             },
+          
 
     })
     Post.associate=(models)=>{
@@ -53,7 +54,10 @@ module.exports =(sequelize, DataTypes)=>{
             foreignKey:"pid",
             onDelete:"CASCADE",
             onUpdate:"CASCADE"
-        })
+        }),
+        Post.belongsTo(models.User, { foreignKey: 'uid', as: 'User' });
+
+        
     }
 return Post
 }

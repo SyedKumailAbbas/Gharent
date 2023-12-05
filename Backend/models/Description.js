@@ -13,6 +13,11 @@ module.exports = (sequelize,DataTypes) => {
       allowNull: false,
 
     },
+    category:{
+      type: DataTypes.STRING,
+      allowNull: false,
+
+    },
     bath: {
       type: DataTypes.INTEGER,
       allowNull: false,

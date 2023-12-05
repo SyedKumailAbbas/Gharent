@@ -1,25 +1,25 @@
-const { verify } = require("jsonwebtoken")
+const { verify } = require("jsonwebtoken");
+
 const validatetoken = (req, res, next) => {
-    const token = req.headers['token'];
-    console.log('Token:', token); // Log the token to check if it's present
-    
-    if (!token) {
-        console.log('No token found, sending error response.');
-        return res.json({ error: "Login first" });
+  const token = req.headers.token;  // Fix here: use req.headers.token instead of req.headers("Token")
+
+  if (!token) {
+    console.log("No token found");
+    return res.json({ error: "User not logged in!" });
+  }
+
+  try {
+    const validToken = verify(token, "hellojani");
+    console.log("Valid token:", validToken);
+
+    if (validToken) {
+      req.user = validToken;
+      return next();
     }
+  } catch (err) {
+    console.error("Token verification error:", err);
+    return res.json({ error: err.message || "Token verification failed" });
+  }
+};
 
-    try {
-        const valid = verify(token, "hellojani");
-        console.log('Token verification result:', valid); // Log the verification result
-        
-        if (valid) {
-            return next();
-        }
-    } catch (e) {
-        console.log('Token verification error:', e.message); // Log the verification error
-        return res.json({ error: e.message });
-    }
-}
-
-
-module.exports = {validatetoken}
+module.exports = { validatetoken };

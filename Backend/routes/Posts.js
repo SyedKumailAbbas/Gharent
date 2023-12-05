@@ -1,9 +1,11 @@
 const express = require('express');
-const { Post, Location, Description, Image, } = require('../models');
+const { Post, Location, Description, Image,User } = require('../models');
 const cloudinary = require('cloudinary')
 const multer = require('multer')
 const router = express.Router();
 const jwt = require('jsonwebtoken')
+const {validatetoken} = require('../middleware/middleauth');
+const { Op } = require('sequelize');
 
 const storage = multer.memoryStorage()
 const upload = multer({ storage: storage })
@@ -15,14 +17,9 @@ cloudinary.config({
 })
 
 // adding post on database
-router.post("/", upload.single('image'), async (req, res) => {
+router.post("/", validatetoken,upload.single('image'), async (req, res) => {
   try {
-    // Verify JWT token
-    const token = req.headers['token'];
-    const decodedToken = jwt.verify(token, "hellojani");
-    // console.log(decodedToken)
-    // console.log(token);
-    console.log(req.headers)
+
     // Upload image to Cloudinary
     const base64String = req.file.buffer.toString('base64');
 
@@ -32,12 +29,13 @@ router.post("/", upload.single('image'), async (req, res) => {
     });
     const imageUrl = result.secure_url;
     const publicid=result.public_id
-
+    const id = req.user.id
     // Create records in the database with associations
     const post = await Post.create({
       Title: req.body.Title,
       Price: req.body.Price,
       Status: req.body.status,
+      uid:id,
     });
 
     const location = await Location.create({
@@ -56,6 +54,7 @@ router.post("/", upload.single('image'), async (req, res) => {
       bed: req.body.beds,
       area: req.body.area,
       pid: post.pid,
+      category: req.body.category,
 
     });
 
@@ -84,7 +83,8 @@ router.get("/", async (req, res) => {
         { model: Location, as: 'Location' },
         { model: Description, as: 'Description' },
         { model: Image, as: 'Image' },
-      ],
+        { model: User, attributes: ['username'], as: 'User' },
+      ],order: [['createdAt', 'DESC']]
     });
     
     if (!allPosts) res.json("There are no post")
@@ -103,42 +103,64 @@ router.get("/", async (req, res) => {
 //getting post by id
 router.get(`/byid/:id`, async (req, res) => {
   const pid = req.params.id
-  const post = await Post.findByPk(pid)
+  const post = await Post.findByPk(pid,{
+  include:[
+    {model: Location, as: Location},
+    {model: Description, as: Description},
+    {model: Image, as : Image}
+
+  ]})
  
-  const location= await Location.findOne({
-    where:{
-      pid:pid
-    },
-  })
-  const image= await Image.findOne({
-    where:{
-      pid:pid
-    },
-  })
-  
-  const description= await Description.findOne({
-    where:{
-      pid:pid
-    },
-  })
-  const fullpost = { ...post.dataValues, ...location?.dataValues, ...image?.dataValues, ...description?.dataValues };
-  res.json(fullpost)
+ res.json(post)
 })
+
+router.delete(`/:postId`, validatetoken, async (req, res) => {
+  const postId = req.params.postId;
+  await Post.destroy({
+    where: {
+      pid: postId,
+    },
+  });
+
+})
+  // getting post when user search by title
+  
+  
+  
+  
+  
+  router.get(`/search/:value`, async (req, res) => {
+    try {
+      const searchValue = req.params.value.toLowerCase();
+      
+      const posts = await Post.findAndCountAll({
+        where: {
+          Title: {
+            [Op.like]: `%${searchValue}%`,
+          },
+      },
+      include: [
+        {
+          model: Location, as: Location
+        },
+        {
+          model: Description, as:Description,
+        },
+        {
+          model: Image, as : Image
+        }
+      ],
+    });
+    
+    res.json({ success: true, data: posts });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, error: 'Internal Server Error' });
+  }
+});
+
+
+
 
 
 module.exports = router;
-
-//getting post when user search by title
-// router.get(`/search/:value`,async(req,res)=>{
-//   const title=req.params.value
-//   const post = await Post.findAndCountAll({
-//     where :{
-//       Title:{
-//         [Op.like]:`%${title}%`
-//       }
-//     }
-//   })
-//   res.json(post)
-// })
-
-

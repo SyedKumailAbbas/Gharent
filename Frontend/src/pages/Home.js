@@ -2,12 +2,31 @@
 import React, { useState, useEffect } from 'react';
 import Post from '../components/Post';
 import axios from 'axios';
+import Sidebar from '../components/Sidebar';
 
 const Home = () => {
   const [input, setinput] = useState('');
   const [posts, setPosts] = useState([]);
   const [initialFetchDone, setInitialFetchDone] = useState(false);
-
+  const [isSidebarOpen, setSidebarOpen] = useState(false); // State for managing sidebar
+  
+  // Toggle the sidebar open and closed
+  const toggleSidebar = () => {
+    setSidebarOpen(!isSidebarOpen);
+  };
+  const toggleStyle = {
+    zIndex: '100',
+    position: 'fixed',
+    top: '50%', // Center vertically
+    left: isSidebarOpen ? '250px' : '0', // Position based on sidebar state
+    transform: 'translateY(-50%)', // Center vertically
+    cursor: 'pointer',
+    fontSize: '40px',
+    border: 'none',
+    background: 'none',
+    color: 'black', // Change as needed
+    transition: 'left 0.3s, transform 0.3s', // Transition for smooth transform
+  };
   // Function to fetch all posts
   const fetchAllPosts = () => {
     axios.get(`http://localhost:3001/posts`)
@@ -46,7 +65,27 @@ const Home = () => {
   }, [input]);
 
   return (
-    <div>
+    <div style={{ display: 'flex', height: '100vh', position: 'relative' }}>
+    <Sidebar isOpen={isSidebarOpen} />
+    
+    {/* Sidebar toggle button */}
+    <div
+      onClick={toggleSidebar}
+      onMouseEnter={(e) => e.target.style.transform = 'translateY(-50%) rotate(180deg)'} // Rotate to become an arrow
+      onMouseLeave={(e) => e.target.style.transform = 'translateY(-50%)'} // Back to a line
+      style={toggleStyle}
+    >
+      {isSidebarOpen ? '>' : '<'} {/* Change direction of arrow based on state */}
+    </div>
+
+    <div style={{
+      transition: 'margin-left 0.3s',
+      marginLeft: isSidebarOpen ? '250px' : '0',
+      padding: '20px',
+      flexGrow: 1,
+      width: isSidebarOpen ? 'calc(100% - 250px)' : '100%', // Adjust width based on sidebar
+      overflowX: 'hidden'
+    }}>
       {/* Searching field */}
       <div>
       <input
@@ -69,6 +108,7 @@ const Home = () => {
         <Post posts={posts} />
       )}
     </div>
+  </div>
   );
 };
 

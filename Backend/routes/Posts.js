@@ -17,18 +17,9 @@ cloudinary.config({
 })
 
 // adding post on database
-router.post("/", validatetoken,upload.single('image'), async (req, res) => {
+router.post("/", validatetoken, upload.array('images', 10), async (req, res) => {
   try {
 
-    // Upload image to Cloudinary
-    const base64String = req.file.buffer.toString('base64');
-
-    // Upload image to Cloudinary
-    const result = await cloudinary.uploader.upload(`data:image/png;base64,${base64String}`, {
-      folder: 'Images',
-    });
-    const imageUrl = result.secure_url;
-    const publicid=result.public_id
     const id = req.user.id
     // Create records in the database with associations
     const post = await Post.create({
@@ -58,20 +49,28 @@ router.post("/", validatetoken,upload.single('image'), async (req, res) => {
 
     });
 
-    const image = await Image.create({
-      imageurl: imageUrl,
-      // Assuming you have an association between Image and Post
-      pid: post.pid,
-    });
+   const images = req.files; // Array of images
+    const uploadedImages = [];
+
+    for (const file of images) {
+      const base64String = file.buffer.toString('base64');
+      const result = await cloudinary.uploader.upload(`data:image/png;base64,${base64String}`, {
+        folder: 'Images',
+      });
+      const imageRecord = await Image.create({
+        imageurl: result.secure_url,
+        pid: post.pid,
+      });
+      uploadedImages.push(imageRecord);
+    }
 
     console.log("Record created successfully");
-    res.status(200).json({ success: true, public_id: publicid });
-    } catch (err) {
+    res.status(200).json({ success: true, post: post, images: uploadedImages });
+  } catch (err) {
     console.error(err);
     res.status(500).json({ success: false, error: 'Internal Server Error' });
   }
 });
-
 
 
 //getting all post

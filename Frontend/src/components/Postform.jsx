@@ -1,4 +1,4 @@
-import React,{useContext,useEffect} from 'react'
+import React,{useState,useContext,useEffect} from 'react'
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import axios from 'axios';
@@ -7,7 +7,8 @@ import { useNavigate } from 'react-router-dom';
 
 const Postform = () => {
     const navigate = useNavigate()
-    let publicid = null
+    const [publicIds, setPublicIds] = useState([]); // This will store the public ids of the uploaded images
+    const [publicid, setPublicId] = useState(null); // For storing the public ID from Cloudinary
     useEffect(() => {
         const token = localStorage.getItem("Token");
         if (!token) {
@@ -26,7 +27,8 @@ const Postform = () => {
         address: "",
         zipcode: "",
         area: "",
-        status: ""
+        status: "",
+        images: []    
     }
 
     const validationSchema = Yup.object().shape({
@@ -51,7 +53,9 @@ const Postform = () => {
     const formSubmit = (data, { resetForm }) => {
         const formData = new FormData()
         const selectedRadioValue = data.radioField;
-
+        for (let i = 0; i < data.images.length; i++) {
+            formData.append('images', data.images[i]);
+        }
         formData.append('Title', data.Title);
         formData.append('Description', data.Description);
         formData.append('category', selectedRadioValue);
@@ -259,24 +263,47 @@ const Postform = () => {
                             <label className='peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6'>Status</label>
                         </div>
 
-                        <label>Upload image</label>
-                        <input // Changed to standard input due to issues with Field and files
-                            className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
-                            id="image"
-                            name="image"
-                            type="file"
-                            onChange={(event) => {
-                                setFieldValue('image', event.currentTarget.files[0]);
-                            }}
-                        />
-                        {values.image && (
-                            <Image
-                                cloudName="dh2as5zu1"
-                                publicId={publicid}
-                                width="300"
-                                crop="scale"
+                        <label>Upload images</label>
+                            <input
+                                className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+                                id="images"
+                                name="images"
+                                type="file"
+                                multiple // Allows multiple file selections
+                                onChange={(event) => {
+                                    const files = event.currentTarget.files;
+                                    if (files.length > 10) {
+                                        alert('You can only upload up to 10 images.');
+                                        return;
+                                    }
+                                    setFieldValue('images', files); // Set the files to the images field
+                                    
+                                    // Create image URLs for previews
+                                    const fileUrls = Array.from(files).map(file => URL.createObjectURL(file));
+                                    setPublicIds(fileUrls); // Update the publicIds state to hold the previews
+                                }}
                             />
-                        )}
+
+                            {/* Display image previews before upload */}
+                            {publicIds.map((src, index) => (
+                                <div key={index}>
+                                    <img src={src} alt={`Preview ${index + 1}`} width="100" />
+                                </div>
+                            ))}
+
+                            {/* Display images from Cloudinary after upload */}
+                            {Array.isArray(values.images) && values.images.length > 0 && (
+                                values.images.map((image, index) => (
+                                    <Image
+                                        key={index}
+                                        cloudName="dh2as5zu1"
+                                        publicId={image.public_id} // Assuming `public_id` is returned from the Cloudinary upload response
+                                        width="300"
+                                        crop="scale"
+                                    />
+                                ))
+                            )}
+
 
 
 

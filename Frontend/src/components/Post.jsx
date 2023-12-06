@@ -12,19 +12,25 @@ const Post = ({ apiEndpoint }) => {
     const fetchData = async () => {
       try {
         const response = await axios.get(apiEndpoint);
-        setAllPost(response.data.posts);
+        // Check if response.data.posts is defined before updating the state
+        if (response.data.posts) {
+          setAllPost(response.data.posts);
+        } else {
+          console.error('No posts found in the response:', response.data);
+        }
       } catch (error) {
         console.error('Error fetching data:', error);
         // Handle errors as needed
       }
     };
-
+  
     fetchData();
-  }, [apiEndpoint]); // Use apiEndpoint as a dependency
+  }, [apiEndpoint]);
+  // Use apiEndpoint as a dependency
 
   const deletePost = (id) => {
     axios
-      .delete(`${apiEndpoint}/${id}`, {
+      .delete(`http://localhost:3001/posts/${id}`, {
         headers: { token: localStorage.getItem('Token') },
       })
       .then(() => {
@@ -44,7 +50,7 @@ const Post = ({ apiEndpoint }) => {
               onClick={() => {
                 navigate(`/post/${value.pid}`);
               }}
-              className='w-[400px] h-[200px] h-auto rounded-t-lg filter grayscale bl r-sm hover:grayscale-0'
+              className='w-[400px] h-[100px] h-auto rounded-t-lg filter grayscale bl r-sm hover:grayscale-0'
               src={value.images[0]}
               alt={value.Title}
             />
@@ -59,9 +65,9 @@ const Post = ({ apiEndpoint }) => {
             <div>{value.description?.area}sq.ft</div>
           </div>
           <div>
-            <div>23-4-12</div>
+            <div >23-4-12
             {authState.username === value.user?.username && (
-              <button
+              <button className='inline'
                 onClick={() => {
                   deletePost(value.pid);
                 }}
@@ -69,6 +75,8 @@ const Post = ({ apiEndpoint }) => {
                 X
               </button>
             )}
+            </div>
+            
           </div>
         </div>
       ))}

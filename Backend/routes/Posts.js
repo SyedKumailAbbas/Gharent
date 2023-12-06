@@ -161,7 +161,7 @@ router.get(`/byid/:id`, async (req, res) => {
   res.status(500).json({ success: false, error: 'Internal Server Error' });
 }
 })
-
+//deleting
 router.delete(`/:postId`, validatetoken, async (req, res) => {
   const postId = req.params.postId;
   await Post.destroy({

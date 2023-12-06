@@ -30,32 +30,37 @@ function Fullpost() {
   }, [id]);
 
   const addComment = () => {
-    axios
-      .post(
-        'http://localhost:3001/comments',
-        {
-          commentBody: newComment,
-          PostId: id,
+  const token = localStorage.getItem('Token');
+  
+  axios
+    .post(
+      'http://localhost:3001/comments',
+      {
+        CommentBody: newComment,
+        pid: id,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
         },
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('Token')}`,
-          },
-        }
-      )
-      .then((response) => {
-        if (response.data.error) {
-          alert('Error: ' + response.data.error);
-        } else {
-          const commentToAdd = { ...response.data, commentBody: newComment };
-          setComments([...comments, commentToAdd]);
-          setNewComment('');
-        }
-      })
-      .catch((error) => {
-        console.error('Failed to add comment:', error);
-      });
-  };
+      }
+    )
+    .then((response) => {
+      const { data, error } = response.data;
+
+      if (error) {
+        alert('Error: ' + error);
+      } else {
+        const commentToAdd = { ...data, Comment_Body: newComment };
+        setComments([...comments, commentToAdd]);
+        setNewComment('');
+      }
+    })
+    .catch((error) => {
+      console.error('Failed to add comment:', error);
+    });
+};
+
 
   const deleteComment = (commentId) => {
     axios
@@ -95,7 +100,7 @@ function Fullpost() {
         <div className="listOfComments">
           {comments.map((comment, key) => (
             <div key={key} className="comment">
-              {comment.commentBody}
+              {comment.CommentBody}
               <label> Username: {comment.username}</label>
               {authState.username === comment.username && (
                 <button

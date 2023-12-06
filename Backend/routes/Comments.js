@@ -3,28 +3,24 @@ const { Comment } = require('../models');
 const { validatetoken } = require('../middleware/middleauth');
 
 const router = express.Router();
-
-router.post("/", validatetoken, async (req, res) => {  //creating comment and add it into db
+router.post("/", validatetoken, async (req, res) => {
     try {
-        const [CommentBody, postid] = req.body;
-        const id=req.user.id
-        console.log("Received token:", req.headers.token);
-        const validToken = verify(req.headers.token, "hellojani");
-        console.log("Token verification details:", validToken);
-
-        await Comment.create({
-            Comment_Body: CommentBody,
-            pid: postid,
-            id:id,
-        })
-        res.json(cmnt);
+      const { CommentBody, pid } = req.body;
+      const id = req.user.id;
+  
+      const createdComment = await Comment.create({
+        Comment_Body: CommentBody,
+        pid: pid,
+        uid: id,
+      });
+  
+      res.json({ data: createdComment });
+    } catch (err) {
+      console.error("Error adding comment:", err);
+      res.status(403).json({ error: "Unauthorized: Only logged-in users can comment" });
     }
-    catch (err) {
-        res.status(403).json({ error: "Unauthorized: Only logged-in users can comment" });
-    }
-
-})
-
+  });
+  
 router.delete("/:commentId", validatetoken, async (req, res) => {
     const commentId = req.params.commentId;
   

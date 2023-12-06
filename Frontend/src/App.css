@@ -1,3 +1,6 @@
+body{
+    background-image: url(../public/images/bg1.jpg);
+}
 .signin{
     font-family: 'Delicious Handrawn', cursive;
     text-align: center;

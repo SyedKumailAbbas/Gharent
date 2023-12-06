@@ -8,7 +8,7 @@ import { useNavigate } from 'react-router-dom';
 const Postform = () => {
     const navigate = useNavigate()
     const [publicIds, setPublicIds] = useState([]); // This will store the public ids of the uploaded images
-    const [publicid, setPublicId] = useState(null); // For storing the public ID from Cloudinary
+    let [publicid, setPublicId] = useState(null); // For storing the public ID from Cloudinary
     useEffect(() => {
         const token = localStorage.getItem("Token");
         if (!token) {
@@ -74,7 +74,7 @@ const Postform = () => {
         axios.post("http://localhost:3001/posts", formData, {
 
             headers: {
-                token: localStorage.getItem("Token")
+                Authorization: `Bearer ${localStorage.getItem('Token')}`
             }
         })
 

@@ -1,8 +1,9 @@
 const { verify } = require("jsonwebtoken");
 
 const validatetoken = (req, res, next) => {
-  const token = req.headers.token;  // Fix here: use req.headers.token instead of req.headers("Token")
-
+  // const token = req.headers.token;  // Fix here: use req.headers.token instead of req.headers("Token")
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1];
   if (!token) {
     console.log("No token found");
     return res.json({ error: "User not logged in!" });

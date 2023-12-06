@@ -100,12 +100,12 @@ function Fullpost() {
         <div className="listOfComments">
           {comments.map((comment, key) => (
             <div key={key} className="comment">
-              {comment.CommentBody}
-              <label> Username: {comment.username}</label>
-              {authState.username === comment.username && (
+              <label> {comment.User.username}: </label>
+              {comment.Comment_Body}
+              {authState.username === comment.User.username && (
                 <button
                   onClick={() => deleteComment(comment.id)}
-                  aria-label={`Delete comment by ${comment.username}`}
+                  aria-label={`Delete comment by ${comment.User.username}`}
                 >
                   X
                 </button>

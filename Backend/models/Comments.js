@@ -8,6 +8,8 @@ const Comment=sequelize.define("Comment",{
         }
     }
 })
-
+Comment.associate=(models)=>{
+Comment.belongsTo(models.User, { foreignKey: 'uid', as: 'User' });
+}
 return Comment
 }

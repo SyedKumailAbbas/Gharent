@@ -1,5 +1,5 @@
 const express = require('express')
-const { Comment } = require('../models');
+const { Comment,User } = require('../models');
 const { validatetoken } = require('../middleware/middleauth');
 
 const router = express.Router();
@@ -40,7 +40,11 @@ router.get(`/:postid`, async (req, res) => {  //viewing all comments from the db
     const allcomments = await Comment.findAll({
         where: {
             pid: postid
-        }
+        },
+        include :[
+          { model: User, attributes: ['username'], as: 'User' },
+        ]
+        
     });
 
     res.json(allcomments);

@@ -40,11 +40,10 @@ module.exports = (sequelize, DataTypes) => {
         },
         phoneno: {
             type: DataTypes.BIGINT,
-            allowNull: false,
+            
             validate: {
                 notEmpty: true
             },
-            unique: true
         },
         email: {
             type: DataTypes.STRING,
@@ -52,7 +51,6 @@ module.exports = (sequelize, DataTypes) => {
             validate: {
                 notEmpty: true
             },
-            unique: true
         },
         password: {
             type: DataTypes.STRING,

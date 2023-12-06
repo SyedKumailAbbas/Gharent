@@ -10,6 +10,7 @@ import { AuthContext } from "./Helpers/AuthContext";
 import { useState, useEffect } from "react";
 import axios from "axios";
 import Sidebar from "./components/Sidebar";
+import Profile from "./pages/Profile";
 function App() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
@@ -65,7 +66,8 @@ function App() {
             </nav>
             <Routes>
               <Route path="/" exact element={<Home />} />
-              <Route path="/createpost" exact element={<Postform />} />
+              <Route path="/createpost" exact element={<Postform/>} />
+              <Route path="/profile" exact element={<Profile />} />
               <Route path="/post/:id" exact element={<Fullpost />} />
               <Route path="/register" exact element={<Register />} />
               <Route path="/login" exact element={<Login />} />

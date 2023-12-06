@@ -45,7 +45,7 @@ module.exports =(sequelize, DataTypes)=>{
             onUpdate:"CASCADE"
         }),
 
-        Post.hasOne(models.Image,{
+        Post.hasMany(models.Image,{
             foreignKey:"pid",
             onDelete:"CASCADE",
             onUpdate:"CASCADE"

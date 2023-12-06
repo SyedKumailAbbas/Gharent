@@ -41,6 +41,7 @@ const Home = () => {
 
   // Function to fetch posts based on search input
   const searchPosts = () => {
+    console.log(input)
     axios.get(`http://localhost:3001/posts/search/${input}`)
       .then((response) => {
         setPosts(response.data.data);
@@ -54,6 +55,9 @@ const Home = () => {
   useEffect(() => {
     if (!initialFetchDone) {
       fetchAllPosts();
+    }
+    else {
+      searchPosts()
     }
   }, [initialFetchDone]);
 
@@ -104,9 +108,7 @@ const Home = () => {
       </button>
 </div>
       {/* Display posts or search results */}
-      {posts && (
-        <Post posts={posts} />
-      )}
+      <Post apiEndpoint="http://localhost:3001/posts" />
     </div>
   </div>
   );

@@ -6,6 +6,9 @@ module.exports=(sequelize,DataTypes)=>{
             allowNull: false,
           }
         });
-      
+      Image.associate=(models)=>{
+        Image.belongsTo(models.Post, { foreignKey: 'pid', as: 'Post' });
+
+      }
         return Image;
     }

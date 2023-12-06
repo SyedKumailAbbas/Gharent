@@ -117,6 +117,7 @@ const Sidebar = ({ isOpen }) => {
     <div style={{ ...sidebarStyle, ...(isOpen ? sidebarOpenStyle : {}) }}>
       <h2>GHARENT</h2>
       <a href="/" style={linkStyle}>Home</a>
+      <a href='/profile' style={linkStyle}>Profile</a>
       <a href="/createpost" style={linkStyle}>Create Post</a>
       <a href="/about" style={linkStyle}>About Us</a>
       <a href="/contact" style={linkStyle}>Contact</a>

@@ -86,12 +86,12 @@ function Fullpost() {
           )}
           <div className="text-white text-3xl font-black body">{postObject.posts ? postObject.posts.Price : ''}</div>
           <div className="text-white text-2xl title">{postObject.posts ? postObject.posts.Title : ''}</div>
-          <div className="inline text-white text-2xl title">{postObject.posts.description.bed ? postObject.posts.description.bed : ''}
+          <div className="inline text-white text-2xl title">{postObject.posts && postObject.posts.description && postObject.posts.description.bed ? postObject.posts.description.bed : ''}
           <img className='lg-w-[100px]' src='/images/bed.png'/>
           </div>
-          <div className="inline text-white text-2xl title">{postObject.posts.description.bath ? postObject.posts.description.bath : ''}</div>
+          <div className="inline text-white text-2xl title">{postObject.posts && postObject.posts.description && postObject.posts.description.bath ? postObject.posts.description.bath : ''}</div>
 
-          <div className="text-white text-xl title">{postObject.posts.description.desctxt ? postObject.posts.description.desctxt : ''}</div>
+          <div className="text-white text-xl title">{postObject.posts && postObject.posts.description && postObject.posts.description.desctxt ? postObject.posts.description.desctxt : ''}</div>
 
         </div>
       </div>

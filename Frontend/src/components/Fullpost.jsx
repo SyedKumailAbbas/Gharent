@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import { AuthContext } from '../Helpers/AuthContext';
 import DynamicImageCarousel from './DynamicImageCarousel'; // Adjust the path accordingly
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 function Fullpost() {
   let { id } = useParams();
@@ -77,16 +78,24 @@ function Fullpost() {
 
   return (
     <div className="postPage">
-      <div className="leftSide">
+    <div className='row'>
+      <div className="col-6 leftSide">
         <div className="post" id="individual">
-          <div className="title">{postObject.posts ? postObject.posts.Title : ''}</div>
-          <div className="body">{postObject.posts ? postObject.posts.Price : ''}</div>
           {postObject.posts && postObject.posts.images && (
             <DynamicImageCarousel images={postObject.posts.images} />
           )}
+          <div className="text-white text-3xl font-black body">{postObject.posts ? postObject.posts.Price : ''}</div>
+          <div className="text-white text-2xl title">{postObject.posts ? postObject.posts.Title : ''}</div>
+          <div className="inline text-white text-2xl title">{postObject.posts.description.bed ? postObject.posts.description.bed : ''}
+          <img className='lg-w-[100px]' src='/images/bed.png'/>
+          </div>
+          <div className="inline text-white text-2xl title">{postObject.posts.description.bath ? postObject.posts.description.bath : ''}</div>
+
+          <div className="text-white text-xl title">{postObject.posts.description.desctxt ? postObject.posts.description.desctxt : ''}</div>
+
         </div>
       </div>
-      <div className="rightSide">
+      <div className="col-4 rightSide">
         <div className="addCommentContainer">
           <input
             type="text"
@@ -113,6 +122,7 @@ function Fullpost() {
             </div>
           ))}
         </div>
+      </div>
       </div>
     </div>
   );

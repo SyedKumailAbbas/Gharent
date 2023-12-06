@@ -267,7 +267,60 @@ try {
     }
   });
   
-
+  router.get("/filter-posts", async (req, res) => {
+    try {
+      const { bedrooms, bathrooms, category, location } = req.query;
+      let whereClause = {};
+      console.log("Location input from user:", location);
+      if (bedrooms) {
+        whereClause['$Description.bed$'] = bedrooms;
+      }
+      if (bathrooms) {
+        whereClause['$Description.bath$'] = bathrooms;
+      }
+      if (category && typeof category === 'string' && category.length) {
+        whereClause['$Description.category$'] = {
+          [Op.in]: category.split(',')
+        };
+      }
+  
+      let locationWhereClause = {};
+      if (location && typeof location === 'string' && location.length) {
+        const citiesArray = location.split(',');
+        locationWhereClause = {
+          city: { [Op.in]: citiesArray }
+        };
+      }
+  
+      const filteredPosts = await Post.findAll({
+        include: [
+          {
+            model: Location,
+            as: 'Location',
+            attributes: ['city'],
+            where: locationWhereClause, // Apply the location filter here
+            required: location ? true : false // Enforce an inner join only if location filter is provided
+          },
+          {
+            model: Description,
+            as: 'Description',
+            attributes: ['bed', 'bath', 'category'],
+          },
+          {
+            model: Image,
+            as: 'Images',
+          },
+        ],
+        where: whereClause,
+        order: [['createdAt', 'DESC']],
+      });
+  
+      res.status(200).json({ success: true, posts: filteredPosts });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ success: false, error: 'Internal Server Error' });
+    }
+  });
 
 
 

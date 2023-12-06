@@ -219,37 +219,54 @@ try {
 
 
   // getting post when user search by title
-  
   router.get(`/search/:value`, async (req, res) => {
-    try {
-      const searchValue = req.params.value.toLowerCase();
-      
-      const posts = await Post.findAndCountAll({
-        where: {
-          Title: {
-            [Op.like]: `%${searchValue}%`,
-          },
+
+    const searchValue = req.params.value.toLowerCase();
+  
+    const { rows: posts, count } = await Post.findAndCountAll({
+      where: {
+        Title: {
+          [Op.like]: `%${searchValue}%`,
+        },
       },
       include: [
         {
           model: Location, as: Location
         },
         {
-          model: Description, as:Description,
+          model: Description, as: Description,
         },
         {
-          model: Image, as : Image
+          model: Image, as: Image
         }
       ],
     });
-    
-    res.json({ success: true, data: posts });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ success: false, error: 'Internal Server Error' });
-  }
-});
-
+  
+    if (!posts || count === 0) {
+      return res.json({ success: true, posts: [] });
+    }
+  
+    try {
+      const simplifiedPosts = {
+        pid: posts[0].pid,
+        Title: posts[0].Title,
+        Price: posts[0].Price,
+        Status: posts[0].Status,
+        createdAt: posts[0].createdAt,
+        uid: posts[0].uid,
+        location: posts[0].Location,
+        description: posts[0].Description,
+        user: posts[0].User,
+        images: posts[0].Images.map(image => image.imageurl),
+      }
+  
+      res.status(200).json({ success: true, posts: simplifiedPosts });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ success: false, error: 'Internal Server Error' });
+    }
+  });
+  
 
 
 

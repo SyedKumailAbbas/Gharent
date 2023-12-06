@@ -28,45 +28,41 @@ const Home = () => {
     transition: 'left 0.3s, transform 0.3s', // Transition for smooth transform
   };
   // Function to fetch all posts
-  const fetchAllPosts = () => {
-    axios.get(`http://localhost:3001/posts`)
-      .then((response) => {
-        setPosts(response.data.posts);
-        setInitialFetchDone(true);
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-  };
+  // const fetchAllPosts = () => {
+  //   axios.get(`http://localhost:3001/posts`)
+  //     .then((response) => {
+  //       setPosts(response.data.posts);
+  //       setInitialFetchDone(true);
+  //     })
+  //     .catch((error) => {
+  //       console.error(error);
+  //     });
+  // };
 
   // Function to fetch posts based on search input
-  const searchPosts = () => {
-    console.log(input)
-    axios.get(`http://localhost:3001/posts/search/${input}`)
-      .then((response) => {
-        setPosts(response.data.data);
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-  };
 
+    const searchPosts = () => {
+      console.log(input);
+      return <Post apiEndpoint={`http://localhost:3001/posts/search/${input}`} />;
+    };
+    
+ 
   // Use useEffect to trigger the initial fetch when the component mounts
-  useEffect(() => {
-    if (!initialFetchDone) {
-      fetchAllPosts();
-    }
-    else {
-      searchPosts()
-    }
-  }, [initialFetchDone]);
+  // useEffect(() => {
+  //   if (!initialFetchDone) {
+  //     fetchAllPosts();
+  //   }
+  //   else {
+  //     searchPosts()
+  //   }
+  // }, [initialFetchDone]);
 
   // Use useEffect to trigger the search when the input value changes
-  useEffect(() => {
-    if (initialFetchDone) {
-      searchPosts();
-    }
-  }, [input]);
+  // useEffect(() => {
+  //   if (initialFetchDone) {
+  //     searchPosts();
+  //   }
+  // }, [input]);
 
   return (
     <div style={{ display: 'flex', height: '100vh', position: 'relative' }}>

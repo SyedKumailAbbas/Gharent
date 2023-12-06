@@ -50,7 +50,7 @@ const Post = ({ apiEndpoint }) => {
               onClick={() => {
                 navigate(`/post/${value.pid}`);
               }}
-              className='w-[400px] h-[100px] h-auto rounded-t-lg filter grayscale bl r-sm hover:grayscale-0'
+              className='lg:w-[400px] lg:h-[200px] rounded-t-lg filter grayscale bl r-sm hover:grayscale-0'
               src={value.images[0]}
               alt={value.Title}
             />

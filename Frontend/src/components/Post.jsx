@@ -7,7 +7,10 @@ const Post = ({ apiEndpoint }) => {
   const [allpost, setAllPost] = useState([]);
   const navigate = useNavigate();
   const { authState } = useContext(AuthContext);
-
+  const formatDate = (dateString) => {
+    const options = { year: 'numeric', month: 'long', day: 'numeric' };
+    return new Date(dateString).toLocaleDateString(undefined, options);
+  };
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -29,9 +32,12 @@ const Post = ({ apiEndpoint }) => {
   // Use apiEndpoint as a dependency
 
   const deletePost = (id) => {
+    const token = localStorage.getItem('Token');
     axios
       .delete(`http://localhost:3001/posts/${id}`, {
-        headers: { token: localStorage.getItem('Token') },
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       })
       .then(() => {
         navigate('/');
@@ -45,7 +51,7 @@ const Post = ({ apiEndpoint }) => {
           className='m-2 w-maxContent bg-whitesmoke relative max-w-sm aspect-w-1 aspect-h-1 hover:text-black inline-block bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700'
           key={key}
         >
-          <div className='hover:text-black text-white '>
+          <div className='hover:text-black text-yellow-300 '>
             <img
               onClick={() => {
                 navigate(`/post/${value.pid}`);
@@ -62,10 +68,15 @@ const Post = ({ apiEndpoint }) => {
             <div>{value.Price}</div>
           </div>
           <div>
+            <div>{value.description?.bed} bed</div>
+            <div>{value.description?.bath} bath</div>
+
+          </div>
+          <div>
             <div>{value.description?.area}sq.ft</div>
           </div>
           <div>
-            <div >23-4-12
+            <div >{formatDate(value.createdAt)}
             {authState.username === value.user?.username && (
               <button className='inline'
                 onClick={() => {

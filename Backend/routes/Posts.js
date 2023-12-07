@@ -128,7 +128,7 @@ router.get(`/byid/:id`, async (req, res) => {
       { model: Location, as: 'Location' },
       { model: Description, as: 'Description' },
       { model: Image, as: 'Images' }, // Correct alias 'Images'
-      { model: User, attributes: ['username'], as: 'User' },
+      { model: User, attributes: ['username','phoneno'], as: 'User' },
     ],
     order: [['createdAt', 'DESC']],
   });
@@ -270,8 +270,8 @@ try {
   router.get("/filter-posts", async (req, res) => {
     try {
       const { bedrooms, bathrooms, category, location } = req.query;
+  
       let whereClause = {};
-      console.log("Location input from user:", location);
       if (bedrooms) {
         whereClause['$Description.bed$'] = bedrooms;
       }
@@ -280,15 +280,12 @@ try {
       }
       if (category && typeof category === 'string' && category.length) {
         whereClause['$Description.category$'] = {
-          [Op.in]: category.split(',')
+          [Op.in]: category.split(','),
         };
       }
-  
-      let locationWhereClause = {};
-      if (location && typeof location === 'string' && location.length) {
-        const citiesArray = location.split(',');
-        locationWhereClause = {
-          city: { [Op.in]: citiesArray }
+      if (location && Array.isArray(location) && location.length) {
+        whereClause['Location.city'] = {
+          [Op.in]: location,
         };
       }
   
@@ -298,8 +295,10 @@ try {
             model: Location,
             as: 'Location',
             attributes: ['city'],
-            where: locationWhereClause, // Apply the location filter here
-            required: location ? true : false // Enforce an inner join only if location filter is provided
+            where: {
+              city: { [Op.in]: location }, // Always apply location filter
+              required: true, // Enforce inner join for location
+            },
           },
           {
             model: Description,
@@ -321,7 +320,6 @@ try {
       res.status(500).json({ success: false, error: 'Internal Server Error' });
     }
   });
-
-
+  
 
 module.exports = router;

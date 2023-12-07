@@ -92,15 +92,15 @@ const Postform = () => {
     }
 
     return (
-        <div className='Postform'>
+        <div className='bg-white Postform rounded-xl'>
 
             <Formik initialValues={initialValues} onSubmit={formSubmit} validationSchema={validationSchema}>
                 {({ setFieldValue, values }) => (
-                    <Form className='max-w-md mx-auto' encType='multipart/form-data'>
+                    <Form className=' max-w-md mx-auto' encType='multipart/form-data'>
                         <div className='relative z-0 w-full mb-5 group'>
 
                             <Field
-                                className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+                                className="block bg-white py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
                                 autoComplete="off"
                                 id='titleinput'
                                 name='Title'
@@ -113,7 +113,7 @@ const Postform = () => {
                         </div>
                         <div className='relative z-0 w-full mb-5 group'>
                             <Field
-                                className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+                                className="block bg-white py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
                                 autoComplete="off"
                                 id='descinput'
                                 name='Description'
@@ -149,7 +149,7 @@ const Postform = () => {
                         <div className='relative z-0 w-full mb-5 group'>
 
                             <Field
-                                className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+                                className="block bg-white py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
                                 autoComplete="off"
                                 id="beds"
                                 name="beds"
@@ -163,7 +163,7 @@ const Postform = () => {
                         <div className='relative z-0 w-full mb-5 group'>
 
                             <Field
-                                className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+                                className="block bg-white py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
                                 autoComplete="off"
                                 id="bath"
                                 name="baths"
@@ -176,7 +176,7 @@ const Postform = () => {
                         <div className='relative z-0 w-full mb-5 group'>
 
                             <Field
-                                className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+                                className="block bg-white py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
                                 autoComplete="off"
                                 id="country"
                                 name="country"
@@ -189,7 +189,7 @@ const Postform = () => {
                         <div className='relative z-0 w-full mb-5 group'>
 
                             <Field
-                                className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+                                className="block bg-white py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
                                 autoComplete="off"
                                 id="state"
                                 name="state"
@@ -202,7 +202,7 @@ const Postform = () => {
                         <div className='relative z-0 w-full mb-5 group'>
 
                             <Field
-                                className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+                                className="block bg-white py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
                                 autoComplete="off"
                                 id="city"
                                 name="city"
@@ -215,7 +215,7 @@ const Postform = () => {
                         <div className='relative z-0 w-full mb-5 group'>
 
                             <Field
-                                className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+                                className="block bg-white py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
                                 autoComplete="off"
                                 id="address"
                                 name="address"
@@ -228,7 +228,7 @@ const Postform = () => {
                         <div className='relative z-0 w-full mb-5 group'>
 
                             <Field
-                                className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+                                className="block bg-white py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
                                 autoComplete="off"
                                 id="zipcode"
                                 name="zipcode"
@@ -241,7 +241,7 @@ const Postform = () => {
                         <div className='relative z-0 w-full mb-5 group'>
 
                             <Field
-                                className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+                                className="block bg-white py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
                                 autoComplete="off"
                                 id="area"
                                 name="area"
@@ -254,7 +254,7 @@ const Postform = () => {
                         <div className='relative z-0 w-full mb-5 group'>
 
                             <Field
-                                className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+                                className="block bg-white py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
                                 autoComplete="off"
                                 id="status"
                                 name="status"
@@ -265,7 +265,7 @@ const Postform = () => {
 
                         <label>Upload images</label>
                             <input
-                                className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+                                className="block bg-white py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
                                 id="images"
                                 name="images"
                                 type="file"

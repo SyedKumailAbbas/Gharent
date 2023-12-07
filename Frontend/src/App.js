@@ -55,23 +55,25 @@ function App() {
         <AuthContext.Provider value={{ authState, setAuthState }}>
           <Router>
             <nav className="text-white flex flex-row-reverse p-4 " >
-              
-              <Link to="/createpost" className="px-4"> Create A Post</Link>
+
+              <Link to="/createpost" className={({ isActive }) =>
+                `block ${isActive ? "text-orange-700" : "text-gray-200"} py-2 pr-4 pl-3 duration-200 border-b border-gray-100 hover:bg-gray-50 lg:hover:bg-transparent lg:border-0 hover:text-orange-700 lg:p-0`
+              }> Create A Post</Link>
               {!authState.status && <Link to="/login" className="px-4"> Login</Link>}
               {authState.status && <button onClick={logout} className="px-4"> Logout</button>}
-              <NavLink
-                                    to="/"
-                                    className={({isActive}) =>
-                                        `block ${isActive ? "text-orange-700" : "text-gray-200"} py-2 pr-4 pl-3 duration-200 border-b border-gray-100 hover:bg-gray-50 lg:hover:bg-transparent lg:border-0 hover:text-orange-700 lg:p-0`
-                                    }
-                                >
-                                    Home
-                                </NavLink>
+              <Link
+                to="/"
+                className={({ isActive }) =>
+                  `block ${isActive ? "text-orange-700" : "text-gray-200"} py-2 pr-4 pl-3 duration-200 border-b border-gray-100 hover:bg-gray-50 lg:hover:bg-transparent lg:border-0 hover:text-orange-700 lg:p-0`
+                }
+              >
+                Home
+              </Link>
               <h1>{authState.username} </h1>
             </nav>
             <Routes>
               <Route path="/" exact element={<Home />} />
-              <Route path="/createpost" exact element={<Postform/>} />
+              <Route path="/createpost" exact element={<Postform />} />
               <Route path="/profile" exact element={<Profile />} />
               <Route path="/post/:id" exact element={<Fullpost />} />
               <Route path="/register" exact element={<Register />} />

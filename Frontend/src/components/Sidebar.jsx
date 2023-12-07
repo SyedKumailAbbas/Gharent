@@ -111,13 +111,13 @@ const Sidebar = ({ isOpen }) => {
   const applyFilters = () => {
     // Implement the logic to apply filters
     console.log('Applying filters:', { price, bedrooms, bathrooms, categories, locations });
+    
   };
 
   return (
     <div style={{ ...sidebarStyle, ...(isOpen ? sidebarOpenStyle : {}) }}>
       <h2>GHARENT</h2>
       <a href="/" style={linkStyle}>Home</a>
-      <a href='/profile' style={linkStyle}>Profile</a>
       <a href="/createpost" style={linkStyle}>Create Post</a>
       <a href="/about" style={linkStyle}>About Us</a>
       <a href="/contact" style={linkStyle}>Contact</a>

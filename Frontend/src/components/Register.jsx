@@ -18,7 +18,7 @@ const Register = () => {
     lname: Yup.string().required("Enter your last name "),
     username: Yup.string().min(3).max(15).required("Set a unique username"),
     email: Yup.string().email("Invalid email address").required("email is required"),
-    phoneno: Yup.string().matches(/^\d{11}$/, 'Invalid phone number').required('Phone number is required'),
+    phoneno: Yup.string().matches(/^(0\d{10}|\d{11})$/, 'Invalid phone number').required('Phone number is required'),
     password: Yup.string()
       .required('Password is required')
       .min(8)

@@ -116,7 +116,68 @@ router.get("/", async (req, res) => {
   }
 });
 
+//update API
+router.put('/:postId', validatetoken, async (req, res) => {
+  try {
+    const postId = req.params.postId;
+    const userId = req.user.id; // Assuming you have a user object in the request after token validation
 
+    // Check if the post belongs to the authenticated user
+    const post = await Post.findOne({
+      where: {
+        pid: postId,
+        uid: userId,
+      },
+    });
+
+    if (!post) {
+      return res.status(404).json({ success: false, error: 'Post not found or unauthorized' });
+    }
+
+    // Update post details
+    await Post.update({
+      Title: req.body.Title,
+      Price: req.body.Price,
+      Status: req.body.status,
+    }, {
+      where: {
+        pid: postId,
+      },
+    });
+
+    // Update description details
+    await Description.update({
+      desctxt: req.body.Description,
+      bath: req.body.baths,
+      bed: req.body.beds,
+      area: req.body.area,
+      category: req.body.category,
+    }, {
+      where: {
+        pid: postId,
+      },
+    });
+
+    // Update location details
+    await Location.update({
+      address: req.body.address,
+      city: req.body.city,
+      country: req.body.country,
+      state: req.body.state,
+      zipcode: req.body.zipcode,
+    }, {
+      where: {
+        pid: postId,
+      },
+    });
+
+    console.log('Record updated successfully');
+    res.status(200).json({ success: true, message: 'Record updated successfully' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, error: 'Internal Server Error' });
+  }
+});
 
 
 //getting post by id
@@ -220,53 +281,36 @@ try {
 
   // getting post when user search by title
   router.get(`/search/:value`, async (req, res) => {
+    try {
+      const searchValue = req.params.value.toLowerCase();
+      console.log(searchValue)
 
-    const searchValue = req.params.value.toLowerCase();
-  
-    const { rows: posts, count } = await Post.findAndCountAll({
-      where: {
-        Title: {
-          [Op.like]: `%${searchValue}%`,
-        },
+      const posts = await Post.findAndCountAll({
+        where: {
+          Title: {
+            [Op.like]: `%${searchValue}%`,
+          },
       },
       include: [
         {
           model: Location, as: Location
         },
         {
-          model: Description, as: Description,
+          model: Description, as:Description,
         },
         {
-          model: Image, as: Image
+          model: Image, as : Image
         }
       ],
     });
-  
-    if (!posts || count === 0) {
-      return res.json({ success: true, posts: [] });
-    }
-  
-    try {
-      const simplifiedPosts = {
-        pid: posts[0].pid,
-        Title: posts[0].Title,
-        Price: posts[0].Price,
-        Status: posts[0].Status,
-        createdAt: posts[0].createdAt,
-        uid: posts[0].uid,
-        location: posts[0].Location,
-        description: posts[0].Description,
-        user: posts[0].User,
-        images: posts[0].Images.map(image => image.imageurl),
-      }
-  
-      res.status(200).json({ success: true, posts: simplifiedPosts });
-    } catch (err) {
-      console.error(err);
-      res.status(500).json({ success: false, error: 'Internal Server Error' });
-    }
-  });
-  
+console.log(posts)
+    res.json({ success: true, posts });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false,error: 'Internal Server Error' });
+  }
+});
+
   router.get("/filter-posts", async (req, res) => {
     try {
       const { bedrooms, bathrooms, category, location } = req.query;

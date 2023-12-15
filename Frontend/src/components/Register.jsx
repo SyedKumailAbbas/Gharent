@@ -2,7 +2,9 @@ import React from 'react'
 import { Formik, Form, Field, ErrorMessage } from 'formik'
 import * as Yup from 'yup';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 const Register = () => {
+  const navigate=useNavigate()
   const initialValues = {
     fname: "",
     lname: "",
@@ -29,7 +31,7 @@ const Register = () => {
     try {
       await axios.post(`http://localhost:3001/auth/register`, data);
       console.log("Registration successful!");
-
+      navigate('/')
     } catch (error) {
       if (error.response) {
 
@@ -54,7 +56,7 @@ const Register = () => {
        
         <div className="max-w-xs  mx-auto justify-center pt-20 items-center min-h-screen">
           <Formik initialValues={initialValues} onSubmit={formSubmit} validationSchema={validationSchema}>
-            <Form className="bg-black bg-opacity-30 rounded-2xl shadow-md rounded px-8 pt-6 pb-8 mb-4">
+            <Form className="bg-black bg-opacity-10 rounded-2xl shadow-md rounded px-8 pt-6 pb-8 mb-4">
             <div className="my-5 flex items-center before:mt-0.5 before:flex-1 before:border-t before:border-neutral-300 after:mt-0.5 after:flex-1 after:border-t after:border-neutral-300">
             <p className="mx-4 mb-0 text-center font-semibold text-slate-500">
               Sign Up
@@ -110,25 +112,12 @@ const Register = () => {
               <ErrorMessage name="phoneno" component="span" />
 
               <Field className="text-sm w-full px-4 py-2 border border-solid border-gray-300 rounded"
-                type="number"
+                type="text"
                 autoComplete="off"
                 id="phoneno"
                 name="phoneno"
                 placeholder="phone# 1234567890"
               />
-
-              <label className="block text-gray-700 text-sm font-bold mb-2">Gender: </label>
-              <ErrorMessage name="gender" component="span" />
-
-              <Field className="text-sm w-full px-4 py-2 border border-solid border-gray-300 rounded"
-                as="select"
-                id="gen"
-                name="gender"
-              >
-                <option value="male">male</option>
-                <option value="female">female</option>
-              </Field>
-
 
 
               <button type='submit' className='mt-4 bg-blue-600 hover:bg-blue-700 px-4 py-2 text-white uppercase rounded text-xs tracking-wider'>Register</button>

@@ -11,6 +11,8 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import Sidebar from "./components/Sidebar";
 import Profile from "./pages/Profile";
+import Searchpost from "./components/Search";
+
 function App() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
@@ -23,25 +25,40 @@ function App() {
     id: 0,
     status: false,
   });
-
+const uname=authState.username
   useEffect(() => {
-    axios
-      .get("http://localhost:3001/auth/auth", {
-        headers: {
-          Token: localStorage.getItem("Token"),
-        },
-      })
-      .then((response) => {
-        if (response.data.error) {
+    // Check if there's a token in localStorage
+    const token = localStorage.getItem("Token");
+    
+    if (token) {
+      // If there's a token, make a request to validate the user
+      axios
+        .get("http://localhost:3001/auth/auth", {
+          headers: {
+            Token: token,
+          },
+        })
+        .then((response) => {
+          if (response.data.error) {
+            // If there's an error, set the auth state to false
+            setAuthState({ ...authState, status: false });
+          } else {
+            // If the user is authenticated, set the auth state accordingly
+            setAuthState({
+              username: response.data.username,
+              id: response.data.id,
+              status: true,
+            });
+          }
+        })
+        .catch((error) => {
+          console.error("Error checking authentication:", error);
           setAuthState({ ...authState, status: false });
-        } else {
-          setAuthState({
-            username: response.data.username,
-            id: response.data.id,
-            status: true,
-          });
-        }
-      });
+        });
+    } else {
+      // If there's no token, set the auth state to false
+      setAuthState({ ...authState, status: false });
+    }
   }, []);
 
   const logout = () => {
@@ -50,12 +67,11 @@ function App() {
   };
 
   return (
-    <div >
+    <div>
       <div>
         <AuthContext.Provider value={{ authState, setAuthState }}>
           <Router>
-            <nav className="text-white flex flex-row-reverse p-4 " >
-
+            <nav className="text-white flex flex-row-reverse p-4">
               <Link to="/createpost" className={({ isActive }) =>
                 `block ${isActive ? "text-orange-700" : "text-gray-200"} py-2 pr-4 pl-3 duration-200 border-b border-gray-100 hover:bg-gray-50 lg:hover:bg-transparent lg:border-0 hover:text-orange-700 lg:p-0`
               }> Create A Post</Link>
@@ -69,7 +85,7 @@ function App() {
               >
                 Home
               </Link>
-              <h1>{authState.username} </h1>
+              <h1>{uname}</h1>
             </nav>
             <Routes>
               <Route path="/" exact element={<Home />} />
@@ -78,6 +94,8 @@ function App() {
               <Route path="/post/:id" exact element={<Fullpost />} />
               <Route path="/register" exact element={<Register />} />
               <Route path="/login" exact element={<Login />} />
+              <Route path="/search/:input" exact element={<Searchpost />} />
+
             </Routes>
           </Router>
         </AuthContext.Provider>

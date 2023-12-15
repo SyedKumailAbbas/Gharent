@@ -30,7 +30,7 @@ const selectStyle = {
   margin: '5px 0 15px 0', // Space below the select box
   borderRadius: '6px', // Round the corners of the select box
   border: '1px solid #ddd', // Add a border to the select box
-  backgroundColor: 'rgba(255, 255, 255, 0.3)', // Semi-transparent background
+  // backgroundColor: 'rgba(255, 255, 255, 0.3)', // Semi-transparent background
   color: 'black', // Text color for the options
   cursor: 'pointer', // Cursor to pointer to indicate it's selectable
   outline: 'none', // Remove the default focus outline
@@ -46,7 +46,7 @@ const selectStyle = {
 
 const buttonStyle = {
   padding: '10px 20px', // Add padding to the button
-  backgroundColor: '#fff', // Button color
+  // backgroundColor: '#fff', // Button color
   color: '#4568dc', // Text color
   border: '1px solid #4568dc', // Border color
   borderRadius: '4px', // Round the corners
@@ -140,7 +140,7 @@ const Sidebar = ({ isOpen }) => {
             Bathrooms:
             <select name="bathrooms" value={bathrooms} onChange={handleBedBathChange} style={selectStyle}>
               {[1, 2, 3, 4, 5].map(num => (
-                <option key={num} value={num} backgroundColor='rgba(255, 255, 255, 0.3)' >{num}</option>
+                <option key={num} value={num}  >{num}</option>
               ))}
             </select>
           </label>

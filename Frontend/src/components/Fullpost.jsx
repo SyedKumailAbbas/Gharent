@@ -1,33 +1,53 @@
 import React, { useEffect, useState, useContext } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { AuthContext } from '../Helpers/AuthContext';
 import DynamicImageCarousel from './DynamicImageCarousel'; // Adjust the path accordingly
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 function Fullpost() {
+  const navigate = useNavigate();
+
   let { id } = useParams();
   const [postObject, setPostObject] = useState({});
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState('');
   const { authState } = useContext(AuthContext);
 
-  useEffect(() => {
-    axios.get(`http://localhost:3001/posts/byid/${id}`)
-      .then((response) => {
-        setPostObject(response.data);
-      })
-      .catch((error) => {
-        console.error('Failed to fetch post:', error);
+  const deletePost = async (id) => {
+    const token = localStorage.getItem('Token');
+  
+    try {
+      await axios.delete(`http://localhost:3001/posts/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       });
+  
+      // After successful deletion, navigate to the home page
+      navigate('/');
+    } catch (error) {
+      console.error('Failed to delete post:', error);
+    }
+  };
+  
 
-    axios.get(`http://localhost:3001/comments/${id}`)
-      .then((response) => {
-        setComments(response.data);
-      })
-      .catch((error) => {
-        console.error('Failed to fetch comments:', error);
-      });
+  useEffect(() => {
+    const fetchPostAndComments = async () => {
+      try {
+        const [postResponse, commentsResponse] = await Promise.all([
+          axios.get(`http://localhost:3001/posts/byid/${id}`),
+          axios.get(`http://localhost:3001/comments/${id}`),
+        ]);
+
+        setPostObject(postResponse.data);
+        setComments(commentsResponse.data);
+      } catch (error) {
+        console.error('Failed to fetch post and comments:', error);
+      }
+    };
+
+    fetchPostAndComments();
   }, [id]);
 
   const addComment = () => {
@@ -77,7 +97,7 @@ function Fullpost() {
 
   return (
     <div className="postPage" style={{ padding: '20px' }}>
-      <div className='row'>
+      <div className="row">
         {/* Post Details Section */}
         <div className="col-md-6" style={{ padding: '15px' }}>
           <div style={{ backgroundColor: '#fff', padding: '20px', borderRadius: '5px' }}>
@@ -92,19 +112,27 @@ function Fullpost() {
             <p>Bedrooms: {postObject.posts && postObject.posts.description && postObject.posts.description.bed ? postObject.posts.description.bed : 'N/A'}</p>
             <p>Bathrooms: {postObject.posts && postObject.posts.description && postObject.posts.description.bath ? postObject.posts.description.bath : 'N/A'}</p>
             <p>{postObject.posts && postObject.posts.description && postObject.posts.description.desctxt ? postObject.posts.description.desctxt : ''}</p>
-           <div>
-            <p className='inline'>{postObject.posts && postObject.posts.location && postObject.posts.location.country ? postObject.posts.location.country : ''}</p>
-            &nbsp;&nbsp;
-            <p className='inline'>{postObject.posts && postObject.posts.location && postObject.posts.location.state ? postObject.posts.location.state : ''}</p>
-            &nbsp;&nbsp;
-            <p className='inline'>{postObject.posts && postObject.posts.location && postObject.posts.location.city ? postObject.posts.location.city : ''}</p>
-          
+            <div>
+              <p className="inline">{postObject.posts && postObject.posts.location && postObject.posts.location.country ? postObject.posts.location.country : ''}</p>
+              &nbsp;&nbsp;
+              <p className="inline">{postObject.posts && postObject.posts.location && postObject.posts.location.state ? postObject.posts.location.state : ''}</p>
+              &nbsp;&nbsp;
+              <p className="inline">{postObject.posts && postObject.posts.location && postObject.posts.location.city ? postObject.posts.location.city : ''}</p>
             </div>
             <div>
-            <p className='inline'>{postObject.posts && postObject.posts.user && postObject.posts.user.username ? postObject.posts.user.username : ''}: </p>
-            <p className='inline'>{postObject.posts && postObject.posts.user && postObject.posts.user.phoneno ? postObject.posts.user.phoneno : ''}</p>
-
+              <p className="inline">{postObject.posts && postObject.posts.user && postObject.posts.user.username ? postObject.posts.user.username : ''}: </p>
+              <p className="inline">0{postObject.posts && postObject.posts.user && postObject.posts.user.phoneno ? postObject.posts.user.phoneno : ''}</p>
             </div>
+            {authState.username === postObject.posts?.user?.username && (
+              <button
+                className="bg-blue-500 hover:bg-red-700 text-white font-bold py-2 px-4 border border-blue-700 rounded"
+                onClick={() => {
+                  deletePost(postObject.posts.pid);
+                }}
+              >
+                Delete Post
+              </button>
+            )}
           </div>
         </div>
 
@@ -119,18 +147,26 @@ function Fullpost() {
               onChange={(event) => setNewComment(event.target.value)}
               style={{ width: '100%', marginBottom: '10px' }}
             />
-            <button onClick={addComment} style={{ width: '100%', padding: '10px 0' }}>Add Query</button>
+            <button onClick={addComment} style={{ width: '100%', padding: '10px 0' }}>
+              Add Query
+            </button>
 
             {/* List of Comments */}
             <div style={{ marginTop: '20px' }}>
               {comments.map((comment, key) => (
-                <div key={key} style={{ backgroundColor: 'rgba(255, 255, 255, 0.5)', padding: '10px', borderRadius: '5px', marginBottom: '10px' }}>
+                <div
+                  key={key}
+                  style={{
+                    backgroundColor: 'rgba(255, 255, 255, 0.5)',
+                    padding: '10px',
+                    borderRadius: '5px',
+                    marginBottom: '10px',
+                  }}
+                >
                   <strong>{comment.User ? comment.User.username : 'Unknown user'}:</strong>
                   <p>{comment.Comment_Body}</p>
                   {authState.username === (comment.User ? comment.User.username : '') && (
-                    <button onClick={() => deleteComment(comment.id)}>
-                      Delete
-                    </button>
+                    <button onClick={() => deleteComment(comment.id)}>Delete</button>
                   )}
                 </div>
               ))}

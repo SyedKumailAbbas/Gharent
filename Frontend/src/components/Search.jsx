@@ -1,12 +1,10 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
-import { AuthContext } from '../Helpers/AuthContext';
+import { useParams } from 'react-router-dom';
 
-const Post = ({ apiEndpoint }) => {
+const Searchpost = () => {
+  const { input } = useParams();
   const [allpost, setAllPost] = useState([]);
-  const navigate = useNavigate();
-  const { authState } = useContext(AuthContext);
 
   const formatDate = (dateString) => {
     const options = { year: 'numeric', month: 'long', day: 'numeric' };
@@ -16,20 +14,23 @@ const Post = ({ apiEndpoint }) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get(apiEndpoint);
-        if (response.data.posts) {
-          setAllPost(response.data.posts);
+        console.log('Fetching data for value:', input);
+        const response = await axios.get(`http://localhost:3001/posts/search/${input}`);
+        
+        if (response.data) {
+          console.log('Data fetched successfully:', response.data);
+          setAllPost(response.data.posts.rows);
         } else {
-          console.error('No posts found in the response:', response.data);
+          console.error('No posts found in the response:', response.data.error);
         }
       } catch (error) {
         console.error('Error fetching data:', error);
       }
     };
-
+  
     fetchData();
-  }, [apiEndpoint]);
-
+  }, [input]);
+  
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
       {allpost.map((value, key) => (
@@ -38,9 +39,9 @@ const Post = ({ apiEndpoint }) => {
           key={key}
         >
           <img
-            onClick={() => navigate(`/post/${value.pid}`)}
+            // Additional attributes based on your data structure
             className="w-full h-48 object-cover"
-            src={value.images[0]}
+            src={value.Images[0].imageurl} // Fix the reference to the Images array
             alt={value.Title}
           />
           <div className="px-6 py-4">
@@ -48,8 +49,7 @@ const Post = ({ apiEndpoint }) => {
               {value.Title}
             </div>
             <p className="font-lato text-white text-lg">
-              {value.description?.bed} bed | {value.description?.bath} bath |{' '}
-              {value.description?.area} sq.ft
+              {value.Description?.bed} bed | {value.Description?.bath} bath | {value.Description?.area} sq.ft
             </p>
             <p className="font-lato text-white mt-2 text-sm">
               Price: {value.Price} | Posted on {formatDate(value.createdAt)}
@@ -58,7 +58,7 @@ const Post = ({ apiEndpoint }) => {
           <div className="px-6 pt-4 pb-2">
             <button
               className="inline-block bg-yellow-500 text-white px-4 py-2 rounded-md font-lato-semibold hover:bg-yellow-600 transition duration-300"
-              onClick={() => navigate(`/post/${value.pid}`)}
+              // Additional actions based on your requirements
             >
               View Details
             </button>
@@ -66,7 +66,7 @@ const Post = ({ apiEndpoint }) => {
         </div>
       ))}
     </div>
-  );
-};
+  )
+}
 
-export default Post;
+export default Searchpost;

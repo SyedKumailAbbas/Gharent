@@ -33,11 +33,6 @@ module.exports = (sequelize, DataTypes) => {
                 notEmpty: true
             }
         },
-        gender: {
-            type: DataTypes.STRING,
-            alllowNull: false,
-            
-        },
         phoneno: {
             type: DataTypes.BIGINT,
             

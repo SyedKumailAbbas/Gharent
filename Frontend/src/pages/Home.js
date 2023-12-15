@@ -2,8 +2,11 @@ import React, { useState, useEffect } from 'react';
 import Post from '../components/Post';
 import axios from 'axios';
 import Sidebar from '../components/Sidebar';
-
+import Searchpost from '../components/Search';
+import { useNavigate } from 'react-router-dom';
 const Home = () => {
+
+  const navigate=useNavigate()
   const [input, setinput] = useState('');
   const [posts, setPosts] = useState([]);
   const [initialFetchDone, setInitialFetchDone] = useState(false);
@@ -29,16 +32,17 @@ const Home = () => {
     transition: 'left 0.3s, transform 0.3s',
   };
 
-  const searchPosts = async () => {
-    try {
-      const response = await axios.get(`http://localhost:3001/posts/search/${input}`);
-      const postsArray = Object.values(response.data.posts || {});
-      setSearchResults(postsArray);
-      setSearchResultsVisible(true);
-    } catch (error) {
-      console.error('Error in search:', error);
-    }
+  const searchPosts = (input) => {
+    // Your logic to set the input value
+navigate(`/search/${input}`)
+    // Conditionally render the Searchpost component
+    // if (input) {
+    //   return <Searchpost val={input} />;
+    // } else {
+    //   return <p>No input provided</p>;
+    // }
   };
+
 
   const handleFilterApply = async (filters) => {
     try {
@@ -82,17 +86,16 @@ const Home = () => {
 
           <button
             className="inline bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-            onClick={() => searchPosts()}
+            onClick={() => searchPosts(input)}
           >
             Search
+
+
           </button>
         </div>
 
-        {searchResultsVisible && searchResults.length > 0 ? (
-          searchResults.map((post) => <div key={post.pid}>Post Title: {post.Title}</div>)
-        ) : (
-          <Post apiEndpoint="http://localhost:3001/posts" />
-        )}
+  <Post apiEndpoint="http://localhost:3001/posts" />
+
       </div>
     </div>
   );

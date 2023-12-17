@@ -311,59 +311,76 @@ console.log(posts)
   }
 });
 
-  router.get("/filter-posts", async (req, res) => {
-    try {
-      const { bedrooms, bathrooms, category, location } = req.query;
-  
-      let whereClause = {};
-      if (bedrooms) {
-        whereClause['$Description.bed$'] = bedrooms;
-      }
-      if (bathrooms) {
-        whereClause['$Description.bath$'] = bathrooms;
-      }
-      if (category && typeof category === 'string' && category.length) {
-        whereClause['$Description.category$'] = {
-          [Op.in]: category.split(','),
-        };
-      }
-      if (location && Array.isArray(location) && location.length) {
-        whereClause['Location.city'] = {
-          [Op.in]: location,
-        };
-      }
-  
-      const filteredPosts = await Post.findAll({
-        include: [
-          {
-            model: Location,
-            as: 'Location',
-            attributes: ['city'],
-            where: {
-              city: { [Op.in]: location }, // Always apply location filter
-              required: true, // Enforce inner join for location
-            },
-          },
-          {
-            model: Description,
-            as: 'Description',
-            attributes: ['bed', 'bath', 'category'],
-          },
-          {
-            model: Image,
-            as: 'Images',
-          },
-        ],
-        where: whereClause,
-        order: [['createdAt', 'DESC']],
-      });
-  
-      res.status(200).json({ success: true, posts: filteredPosts });
-    } catch (err) {
-      console.error(err);
-      res.status(500).json({ success: false, error: 'Internal Server Error' });
+router.get("/filter-posts", async (req, res) => {
+  try {
+    const { bedrooms, bathrooms, category, location } = req.query;
+    let whereClause = {};
+    console.log("Location input from user:", location);
+    console.log("bed input from user:", bedrooms);
+    console.log("bath input from user:", bathrooms);
+    console.log("category input from user:", category);
+    if (bedrooms) {
+      whereClause['$Description.bed$'] = bedrooms;
     }
-  });
-  
+    if (bathrooms) {
+      whereClause['$Description.bath$'] = bathrooms;
+    }
+    if (category && typeof category === 'string' && category.length) {
+      whereClause['$Description.category$'] = {
+        [Op.in]: category.split(',')
+      };
+    }
+    // Check if category is an object (multiple values) and convert it to an array
+    // object value converts it into array
+    if (category) {
+      const categoriesArray = typeof category === 'object' ? Object.values(category) : [category];
+      whereClause['$Description.category$'] = {
+          [Op.in]: categoriesArray
+      };
+  }
+
+    let locationWhereClause = {};
+    if (location && typeof location === 'string' && location.length) {
+      const citiesArray = location.split(',');
+      locationWhereClause = {
+        city: { [Op.in]: citiesArray }
+      };
+    }
+    if (location) {
+      const locationsArray = typeof location === 'object' ? Object.values(location) : [location];
+      locationWhereClause = {
+          city: { [Op.in]: locationsArray }
+      };
+  }
+
+    const filteredPosts = await Post.findAll({
+      include: [
+        {
+          model: Location,
+          as: 'Location',
+          attributes: ['city'],
+          where: locationWhereClause, // Apply the location filter here
+          required: location ? true : false // Enforce an inner join only if location filter is provided
+        },
+        {
+          model: Description,
+          as: 'Description',
+          attributes: ['bed', 'bath', 'category'],
+        },
+        {
+          model: Image,
+          as: 'Images',
+        },
+      ],
+      where: whereClause,
+      order: [['createdAt', 'DESC']],
+    });
+
+    res.status(200).json({ success: true, posts: filteredPosts });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, error: 'Internal Server Error' });
+  }
+});
 
 module.exports = router;
